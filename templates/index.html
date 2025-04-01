@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sécurité des Images</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h2>SecureImage</h2>
+        </div>
+        <button class="help-button">Aide</button>
+        
+        <!-- Ajout de la barre de progression verticale -->
+        <div class="progress-bar-vertical">
+            <div class="progress-fill" id="progressFill" style="height: 0%"></div>
+        </div>
+        
+        <nav class="nav-menu">
+            <div class="nav-item active">Accueil</div>
+            <div class="nav-item">Traitement par lot</div>
+            <div class="nav-item">Historique</div>
+            <div class="nav-item">Paramètres</div>
+        </nav>
+    </div>
+
+    <main class="main-content">
+        <div class="folder-form">
+            <h2>Sélection du dossier</h2>
+            <form method="post" action="{{ url_for('process_images') }}">
+                <input type="text" name="folder_path" placeholder="Chemin du dossier">
+                <button type="submit">Traiter les images</button>
+            </form>
+        </div>
+
+        <div class="output-display">
+            <h3>Progression du traitement</h3>
+            <div id="output-content">
+                <!-- Le contenu sera mis à jour dynamiquement -->
+            </div>
+        </div>
+
+        <button class="open-folder-btn" id="openFolderBtn" style="display: none;">
+            Voir les images traitées
+        </button>
+    </main>
+
+    <script>
+        // Afficher le bouton une fois le traitement terminé
+        function showOpenFolderButton() {
+            document.getElementById('openFolderBtn').style.display = 'block';
+        }
+        
+        function updateProgress(percentage) {
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.height = percentage + '%';
+        }
+    </script>
+</body>
+</html> 

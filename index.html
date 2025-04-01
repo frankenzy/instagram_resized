@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Resizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Instagram Resizer</h1>
+        <button onclick="alert('Aide')">Aide</button>
+        <div class="menu">
+            <ul>
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">Paramètres</a></li>
+                <li><a href="#">Historique</a></li>
+                <li><a href="#">Déconnexion</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="content">
+        <div class="form-container">
+            <h2>Sélectionnez un dossier</h2>
+            <input type="file" webkitdirectory directory multiple id="folderInput">
+            <button onclick="processImages()">Traiter les images</button>
+        </div>
+        <div class="output-container">
+            <h2>Résultats</h2>
+            <pre id="output"></pre>
+        </div>
+        <div class="button-container">
+            <button onclick="openOutputFolder()">Voir les images traitées</button>
+        </div>
+    </div>
+</body>
+<script>
+    function processImages() {
+        const folderInput = document.getElementById('folderInput');
+        const output = document.getElementById('output');
+        
+        if (folderInput.files.length === 0) {
+            alert('Veuillez sélectionner un dossier contenant des images.');
+            return;
+        }
+
+        // Récupérer le chemin du dossier
+        const files = folderInput.files;
+        const firstFile = files[0];
+        const folderPath = firstFile.webkitRelativePath.split('/')[0];
+        
+        output.textContent = 'Traitement des images en cours...';
+        
+        // Appeler le script Python avec le chemin du dossier
+        fetch('/process_images', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ folderPath: folderPath }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                output.textContent = 'Traitement terminé. Cliquez sur "Voir les images" pour ouvrir le dossier de sortie.';
+                // Stocker le chemin du dossier de sortie
+                window.outputFolder = data.outputFolder;
+            } else {
+                output.textContent = 'Erreur lors du traitement : ' + data.message;
+            }
+        })
+        .catch(error => {
+            output.textContent = 'Erreur : ' + error.message;
+        });
+    }
+    
+    function openOutputFolder() {
+        if (!window.outputFolder) {
+            alert('Veuillez d\'abord traiter des images.');
+            return;
+        }
+        
+        fetch('/open_folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ folderPath: window.outputFolder }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Erreur lors de l\'ouverture du dossier : ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Erreur : ' + error.message);
+        });
+    }
+</script>
+</html>
