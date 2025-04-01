@@ -42,8 +42,11 @@ def process_images():
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         
-        # Traiter les images
-        success_count, error_count = ImageProcessor.process_folder(input_folder)
+        # Récupérer les options
+        options = data.get('options', {})
+        
+        # Traiter les images avec les options
+        success_count, error_count = ImageProcessor.process_folder(input_folder, options=options)
         
         return jsonify({
             "success": True, 

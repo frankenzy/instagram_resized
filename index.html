@@ -23,6 +23,49 @@
         <div class="form-container">
             <h2>Sélectionnez un dossier</h2>
             <input type="file" webkitdirectory directory multiple id="folderInput">
+            
+            <div class="options-container">
+                <h3>Options</h3>
+                
+                <div class="option-row">
+                    <label for="formatSelect">Format de sortie:</label>
+                    <select id="formatSelect">
+                        <option value="jpg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                </div>
+                
+                <div class="option-row">
+                    <label for="qualitySlider">Qualité d'image:</label>
+                    <input type="range" id="qualitySlider" min="1" max="100" value="95">
+                    <span id="qualityValue">95%</span>
+                </div>
+                
+                <div class="option-row">
+                    <label for="watermarkText">Filigrane (texte):</label>
+                    <input type="text" id="watermarkText" placeholder="Entrez votre texte de filigrane">
+                </div>
+
+                <div class="option-row">
+                    <label for="watermarkPosition">Position du filigrane:</label>
+                    <select id="watermarkPosition">
+                        <option value="center">Centre</option>
+                        <option value="top-left">Haut gauche</option>
+                        <option value="top-right">Haut droite</option>
+                        <option value="bottom-left">Bas gauche</option>
+                        <option value="bottom-right">Bas droite</option>
+                        <option value="diagonal">Diagonale</option>
+                    </select>
+                </div>
+                
+                <div class="option-row">
+                    <label for="watermarkOpacity">Opacité du filigrane:</label>
+                    <input type="range" id="watermarkOpacity" min="1" max="100" value="50">
+                    <span id="opacityValue">50%</span>
+                </div>
+            </div>
+            
             <button onclick="processImages()">Traiter les images</button>
         </div>
         <div class="output-container">
@@ -35,6 +78,16 @@
     </div>
 </body>
 <script>
+    // Mettre à jour l'affichage de la valeur de qualité
+    document.getElementById('qualitySlider').addEventListener('input', function() {
+        document.getElementById('qualityValue').textContent = this.value + '%';
+    });
+    
+    // Mettre à jour l'affichage de l'opacité du filigrane
+    document.getElementById('watermarkOpacity').addEventListener('input', function() {
+        document.getElementById('opacityValue').textContent = this.value + '%';
+    });
+    
     function processImages() {
         const folderInput = document.getElementById('folderInput');
         const output = document.getElementById('output');
@@ -49,15 +102,31 @@
         const firstFile = files[0];
         const folderPath = firstFile.webkitRelativePath.split('/')[0];
         
+        // Récupérer les options
+        const format = document.getElementById('formatSelect').value;
+        const quality = document.getElementById('qualitySlider').value;
+        const watermarkText = document.getElementById('watermarkText').value;
+        const watermarkPosition = document.getElementById('watermarkPosition').value;
+        const watermarkOpacity = document.getElementById('watermarkOpacity').value;
+        
         output.textContent = 'Traitement des images en cours...';
         
-        // Appeler le script Python avec le chemin du dossier
+        // Appeler le script Python avec le chemin du dossier et les options
         fetch('/process_images', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ folderPath: folderPath }),
+            body: JSON.stringify({ 
+                folderPath: folderPath,
+                options: {
+                    format: format,
+                    quality: parseInt(quality),
+                    watermarkText: watermarkText,
+                    watermarkPosition: watermarkPosition,
+                    watermarkOpacity: parseInt(watermarkOpacity)
+                }
+            }),
         })
         .then(response => response.json())
         .then(data => {
