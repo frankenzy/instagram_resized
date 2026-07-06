@@ -165,3 +165,61 @@ body {
 .button-container button:hover {
     background-color: #219653;
 }
+
+/* Styles pour les onglets */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.menu a.active {
+    background-color: #3498db;
+    color: white;
+}
+
+/* Styles pour les options avancées */
+.advanced-option {
+    border-left: 3px solid #3498db;
+    padding-left: 12px;
+    margin-left: 5px;
+}
+
+.toggle-advanced {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #ced4da;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.toggle-advanced:hover {
+    background-color: #e9ecef;
+}
+
+/* Style pour les tooltips d'aide */
+.help-tooltip {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: white;
+    margin-left: 8px;
+    cursor: help;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Style pour les cases à cocher */
+input[type="checkbox"] {
+    margin-right: 5px;
+    transform: scale(1.2);
+}
