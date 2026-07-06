@@ -26,10 +26,10 @@
                 <h2>Redimensionner des images</h2>
                 <p>Sélectionnez un dossier contenant vos images pour les redimensionner au format Instagram.</p>
                 <input type="file" webkitdirectory directory multiple id="resizefolderInput">
-                
+
                 <div class="options-container">
                     <h3>Options</h3>
-                    
+
                     <div class="option-row">
                         <label for="formatSelect">Format de sortie:</label>
                         <select id="formatSelect">
@@ -38,7 +38,7 @@
                             <option value="webp">WebP</option>
                         </select>
                     </div>
-                    
+
                     <div class="option-row">
                         <label for="qualitySlider">Qualité d'image:</label>
                         <input type="range" id="qualitySlider" min="1" max="100" value="95">
@@ -61,14 +61,14 @@
                             <option value="diagonal">Diagonale</option>
                         </select>
                     </div>
-                    
+
                     <div class="option-row">
                         <label for="watermarkOpacity">Opacité du filigrane:</label>
                         <input type="range" id="watermarkOpacity" min="1" max="100" value="50">
                         <span id="opacityValue">50%</span>
                     </div>
                 </div>
-                
+
                 <button onclick="processImages()">Redimensionner les images</button>
             </div>
             <div class="output-container">
@@ -79,55 +79,57 @@
                 <button onclick="openOutputFolder('resize')">Voir les images traitées</button>
             </div>
         </div>
-        
+
         <!-- Onglet de suppression d'arrière-plan -->
         <div id="background-tab" class="tab-content">
             <div class="form-container">
                 <h2>Supprimer l'arrière-plan des images</h2>
                 <p>Sélectionnez un dossier contenant vos images pour supprimer leur arrière-plan.</p>
                 <input type="file" webkitdirectory directory multiple id="bgfolderInput">
-                
+
                 <div class="options-container">
                     <h3>Options de traitement</h3>
-                    
+
                     <div class="option-row">
                         <label for="modelSelect">Modèle IA:</label>
                         <select id="modelSelect">
+                            <option value="isnet-general-use" selected>isnet-general-use (Recommandé)</option>
+                            <option value="silueta">silueta</option>
                             <option value="u2net">Standard (U2Net)</option>
                             <option value="u2netp">Léger (U2NetP)</option>
                             <option value="u2net_human_seg">Spécial Personnes</option>
                         </select>
                     </div>
-                    
+
                     <div class="option-row">
                         <label for="alphaMatting">Alpha Matting:</label>
                         <input type="checkbox" id="alphaMatting" checked>
                         <span class="help-tooltip" title="Améliore la détection des détails fins comme les cheveux">?</span>
                     </div>
-                    
+
                     <div class="option-row advanced-option">
                         <label for="fgThreshold">Seuil premier plan:</label>
                         <input type="range" id="fgThreshold" min="1" max="255" value="240">
                         <span id="fgThresholdValue">240</span>
                     </div>
-                    
+
                     <div class="option-row advanced-option">
                         <label for="bgThreshold">Seuil arrière-plan:</label>
                         <input type="range" id="bgThreshold" min="1" max="255" value="10">
                         <span id="bgThresholdValue">10</span>
                     </div>
-                    
+
                     <div class="option-row advanced-option">
                         <label for="erodeSize">Taille d'érosion:</label>
                         <input type="range" id="erodeSize" min="1" max="30" value="10">
                         <span id="erodeSizeValue">10</span>
                     </div>
-                    
+
                     <div class="option-row">
                         <button class="toggle-advanced" onclick="toggleAdvancedOptions()">Afficher options avancées</button>
                     </div>
                 </div>
-                
+
                 <button onclick="removeBackground()">Supprimer l'arrière-plan</button>
             </div>
             <div class="output-container">
@@ -138,7 +140,7 @@
                 <button onclick="openOutputFolder('background')">Voir les images traitées</button>
             </div>
         </div>
-        
+
         <!-- Onglet paramètres (vide pour l'instant) -->
         <div id="settings-tab" class="tab-content">
             <div class="form-container">
@@ -147,7 +149,7 @@
                 <!-- Options à implémenter dans le futur -->
             </div>
         </div>
-        
+
         <!-- Onglet historique (vide pour l'instant) -->
         <div id="history-tab" class="tab-content">
             <div class="form-container">
@@ -165,28 +167,28 @@
         for (let i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove('active');
         }
-        
+
         // Afficher l'onglet sélectionné
         document.getElementById(tabName + '-tab').classList.add('active');
-        
+
         // Mettre à jour la classe active dans le menu
         const menuItems = document.querySelectorAll('.menu a');
         for (let i = 0; i < menuItems.length; i++) {
             menuItems[i].classList.remove('active');
         }
-        
+
         // Mettre en surbrillance l'onglet actif dans le menu
         const activeTab = document.querySelector(`.menu a[onclick="showTab('${tabName}')"]`);
         if (activeTab) {
             activeTab.classList.add('active');
         }
     }
-    
+
     // Afficher/masquer les options avancées
     function toggleAdvancedOptions() {
         const advancedOptions = document.getElementsByClassName('advanced-option');
         const toggleButton = document.querySelector('.toggle-advanced');
-        
+
         let anyHidden = false;
         for (let i = 0; i < advancedOptions.length; i++) {
             if (advancedOptions[i].style.display === 'none' || window.getComputedStyle(advancedOptions[i]).display === 'none') {
@@ -194,53 +196,53 @@
                 break;
             }
         }
-        
+
         for (let i = 0; i < advancedOptions.length; i++) {
             advancedOptions[i].style.display = anyHidden ? 'flex' : 'none';
         }
-        
+
         toggleButton.textContent = anyHidden ? 'Masquer options avancées' : 'Afficher options avancées';
     }
-    
+
     // Initialiser les options avancées en mode caché
     document.addEventListener('DOMContentLoaded', function() {
         const advancedOptions = document.getElementsByClassName('advanced-option');
         for (let i = 0; i < advancedOptions.length; i++) {
             advancedOptions[i].style.display = 'none';
         }
-        
+
         // Attacher les écouteurs d'événements pour les curseurs
         // Qualité d'image
         document.getElementById('qualitySlider').addEventListener('input', function() {
             document.getElementById('qualityValue').textContent = this.value + '%';
         });
-        
+
         // Opacité du filigrane
         document.getElementById('watermarkOpacity').addEventListener('input', function() {
             document.getElementById('opacityValue').textContent = this.value + '%';
         });
-        
+
         // Alpha matting - Seuil premier plan
         document.getElementById('fgThreshold').addEventListener('input', function() {
             document.getElementById('fgThresholdValue').textContent = this.value;
         });
-        
+
         // Alpha matting - Seuil arrière-plan
         document.getElementById('bgThreshold').addEventListener('input', function() {
             document.getElementById('bgThresholdValue').textContent = this.value;
         });
-        
+
         // Alpha matting - Taille d'érosion
         document.getElementById('erodeSize').addEventListener('input', function() {
             document.getElementById('erodeSizeValue').textContent = this.value;
         });
     });
-    
+
     // Redimensionner des images
     function processImages() {
         const folderInput = document.getElementById('resizefolderInput');
         const output = document.getElementById('resize-output');
-        
+
         if (folderInput.files.length === 0) {
             alert('Veuillez sélectionner un dossier contenant des images.');
             return;
@@ -250,23 +252,23 @@
         const files = folderInput.files;
         const firstFile = files[0];
         const folderPath = firstFile.webkitRelativePath.split('/')[0];
-        
+
         // Récupérer les options
         const format = document.getElementById('formatSelect').value;
         const quality = document.getElementById('qualitySlider').value;
         const watermarkText = document.getElementById('watermarkText').value;
         const watermarkPosition = document.getElementById('watermarkPosition').value;
         const watermarkOpacity = document.getElementById('watermarkOpacity').value;
-        
+
         output.textContent = 'Traitement des images en cours...';
-        
+
         // Appeler le script Python avec le chemin du dossier et les options
         fetch('/process_images', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 folderPath: folderPath,
                 options: {
                     format: format,
@@ -291,12 +293,12 @@
             output.textContent = 'Erreur : ' + error.message;
         });
     }
-    
+
     // Supprimer l'arrière-plan des images
     function removeBackground() {
         const folderInput = document.getElementById('bgfolderInput');
         const output = document.getElementById('bg-output');
-        
+
         if (folderInput.files.length === 0) {
             alert('Veuillez sélectionner un dossier contenant des images.');
             return;
@@ -306,23 +308,23 @@
         const files = folderInput.files;
         const firstFile = files[0];
         const folderPath = firstFile.webkitRelativePath.split('/')[0];
-        
+
         // Récupérer les options
         const model = document.getElementById('modelSelect').value;
         const alphaMatting = document.getElementById('alphaMatting').checked;
         const fgThreshold = document.getElementById('fgThreshold').value;
         const bgThreshold = document.getElementById('bgThreshold').value;
         const erodeSize = document.getElementById('erodeSize').value;
-        
+
         output.textContent = 'Suppression des arrière-plans en cours... Cela peut prendre un moment.';
-        
+
         // Appeler le script Python pour supprimer les arrière-plans
         fetch('/remove_background', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 folderPath: folderPath,
                 options: {
                     model: model,
@@ -347,21 +349,21 @@
             output.textContent = 'Erreur : ' + error.message;
         });
     }
-    
+
     function openOutputFolder(type) {
         let outputFolder;
-        
+
         if (type === 'resize') {
             outputFolder = window.resizeOutputFolder;
         } else if (type === 'background') {
             outputFolder = window.bgOutputFolder;
         }
-        
+
         if (!outputFolder) {
             alert('Veuillez d\'abord traiter des images.');
             return;
         }
-        
+
         fetch('/open_folder', {
             method: 'POST',
             headers: {

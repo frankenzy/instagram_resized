@@ -16,7 +16,12 @@ Une application simple et intuitive pour redimensionner vos images au format Ins
 1. Lancez l'application en exécutant :
    ```bash
    python main.py
+
+2- lancer la version web
+   ```bash
+   python app.py
    ```
+   WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
 
 2. Cliquez sur "Sélectionner un dossier" et choisissez le dossier contenant vos images
 
