@@ -11,6 +11,7 @@ import subprocess
 import platform
 from flask import Flask, request, jsonify, send_from_directory
 from src.image_processor import ImageProcessor
+from src.background_remover import BackgroundRemover
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
@@ -47,6 +48,43 @@ def process_images():
         
         # Traiter les images avec les options
         success_count, error_count = ImageProcessor.process_folder(input_folder, options=options)
+        
+        return jsonify({
+            "success": True, 
+            "successCount": success_count, 
+            "errorCount": error_count,
+            "outputFolder": output_folder
+        })
+    
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/remove_background', methods=['POST'])
+def remove_background():
+    """API pour supprimer l'arrière-plan des images d'un dossier"""
+    try:
+        data = request.json
+        folder_path = data.get('folderPath')
+        
+        if not folder_path:
+            return jsonify({"success": False, "message": "Chemin du dossier non spécifié"}), 400
+        
+        # Trouver le chemin complet du dossier
+        for root, dirs, files in os.walk('.'):
+            if folder_path in dirs:
+                input_folder = os.path.join(root, folder_path)
+                break
+        else:
+            return jsonify({"success": False, "message": f"Dossier {folder_path} non trouvé"}), 404
+        
+        # Récupérer les options
+        options = data.get('options', {})
+        
+        # Traiter les images avec les options
+        success_count, error_count = BackgroundRemover.process_folder(input_folder, options=options)
+        
+        # Obtenir le chemin du dossier de sortie
+        output_folder = os.path.join(input_folder, "background_removed")
         
         return jsonify({
             "success": True, 
